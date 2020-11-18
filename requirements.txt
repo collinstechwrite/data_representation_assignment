@@ -1,0 +1,10 @@
+flask
+newsapi-python
+xlsx2html
+requests
+googletrans
+pypyodbc
+pymysql
+openfoodfacts==0.1.2
+requests
+matplotlib
