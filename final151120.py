@@ -66,7 +66,7 @@ while brand_input not in brand_dictionary.keys():
 
 brand_input_choice = brand_dictionary[brand_input]
 
-
+"""
 "--------------------------------------------------------------------------------------------------------------------------------------------------------"""
 
 
@@ -161,7 +161,9 @@ def database_row_update(translate_this, language_value2, title, url):
 "--------------------------------------------------------------------------------------------------------------------------------------------------------"""
 #Setting up extractions from News API
 
-news_keyword = brand_input_choice #Brand chosen by user
+news_keyword = brand_input_choice #Brand chosen by user from openfoodfacts api
+
+#news_keyword = input("Write a keyword to search the news , e.g. bitcoin")
 
 # https://newsapi.org/docs/client-libraries/python
 newsapi = NewsApiClient(api_key='0fb13acc3bc8480eafedb87afa941f7e')
@@ -210,6 +212,8 @@ my_string_for_word_count = "" #this string will be used for doing word count ana
 
 #The while loop below handle printing to console, saving to excel, saving to database
 
+
+
 while row < dictionary_length:
     #https://docs.python.org/3/tutorial/errors.html
     try:
@@ -217,7 +221,7 @@ while row < dictionary_length:
         print(returned_data_from_api[row]['title'])
         translate_this = returned_data_from_api[row]['title']
 
-        my_string_for_word_count = my_string + translate_this #adding one healine at a time to the string for word count analysis
+        my_string_for_word_count = my_string_for_word_count + translate_this #adding one healine at a time to the string for word count analysis
 
         
         translate_this = str(translate_this)
@@ -234,7 +238,7 @@ while row < dictionary_length:
 
         excel_row_update(translate_this, language_value2, title, url) #update spreadsheet
 
-        database_row_update(translate_this, language_value2, title, url) #update database
+        #database_row_update(translate_this, language_value2, title, url) #update database
         
                 
         row += 1
@@ -272,17 +276,28 @@ x = sorted_dict
 #https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
 sorted_x = sorted(x.items(), key=lambda kv: kv[1])
 
-print("sorted_x")
-print(sorted_x)
+
+#https://stackoverflow.com/questions/646644/how-to-get-last-items-of-a-list-in-python
+my_graph_data = list(sorted_x)[-10:]
+my_graph_data_dict = dict(my_graph_data)
 
 
 
 #https://www.kite.com/python/answers/how-to-plot-a-bar-chart-using-a-dictionary-in-matplotlib-in-python
 a_dictionary = x
-keys = a_dictionary.keys()
-values = a_dictionary.values()
+keys = my_graph_data_dict.keys()
+values = my_graph_data_dict.values()
 
-plt.bar(keys, values)
+#https://www.kite.com/python/answers/how-to-rotate-axis-labels-in-matplotlib-in-python
+plt.xticks(rotation=45)
+plt.yticks(rotation=90)
+#https://showmecode.info/matplotlib/bar/change-bar-color/
+plt.bar(keys, values,  color=['red', 'blue', 'purple', 'green', 'lavender'])
+plt.ylabel('Occurences of word')
+plt.title('Most Frequent Words In Headlines')
+#https://www.kite.com/python/answers/how-save-a-matplotlib-plot-as-a-pdf-file-in-python
+plt.savefig("plots.pdf")
+plt.show()
 
 "--------------------------------------------------------------------------------------------------------------------------------------------------------"""
 
