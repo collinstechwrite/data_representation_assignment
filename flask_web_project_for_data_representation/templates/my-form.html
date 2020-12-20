@@ -1,32 +1,63 @@
+<meta http-equiv="cache-control" content="no-cache" />
+<meta http-equiv="Pragma" content="no-cache" />
 <!DOCTYPE html>
 <head>
-<title>Calculate Energy Output From Wind Turbine</title>
+
+<style>
+table, th, td {
+  border: 1px solid black;
+}
+
+table {
+  width: 100%;
+}
+</style>
+<title>Analyse The News</title>
 </head>
 <body>
 
-<img src="static/images/Wind_turbine_Holderness.jpg" alt="https://commons.wikimedia.org/wiki/File:Wind_turbine_Holderness.jpg">
+
 <h1>
 Analyse The Newspaper Headlines With Flask And Matplot Lib
 </h1>
 
+<img src="https://www.irishtimes.com/polopoly_fs/1.3700610.1542410960!/image/image.jpg_gen/derivatives/box_620_330/image.jpg">
 
 <form method="POST">
 
-    Search the news for a keyword of your choice<br>
+    <b>Search the news for a keyword of your choice</b><br>
 
     <input name="text" type="text">
     <input type="submit">
 
 </form>
 
-How this works
+How this works<br>
 
-1. We search a news api
-2. We save every article title to MySQL database and Spreadsheet
-3. We store the words of every article to a dictionary
-4. We strip out the common words
-5. We do a graph
+1. We search a news api<br>
+2. We save every article title to MySQL database and Spreadsheet<br>
+3. We store the words of every article to a dictionary<br>
+4. We strip out the common words<br>
+5. We do a graph<br>
 
+<a href="/database">Want to view all database records click here!</a>
+<p>{{filelocation}}</p>
+<center>
+<table>
+<tr>
+<th>NEWSPAPER HEADLINES</th>
+</tr>
+{% for item in list %}
+<tr>
+<td>{{item}}</td>
+</tr>
+{% endfor %}
+</table>
+</center>
+
+<img src="static/images/plot.png" alt="A Matplotlibplot">
+
+</body>
 
 
 
