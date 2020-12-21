@@ -24,6 +24,17 @@ mysql = MySQL(app)
 
 
 
+
+
+@app.route('/')
+def my_form():
+    return render_template('my-form.html')
+
+@app.route('/', methods=['POST'])
+def my_form_post():
+    text = request.form['text']
+
+
 def view_database_records():
 
 
@@ -68,23 +79,6 @@ def receive_text_from_form(text):
     mysql.connection.commit()        
     return my_list
 
-
-
-
-def activate_all(text):
-
-    #Setting up extractions from News API
-
-    news_keyword = text
-
-    # https://newsapi.org/docs/client-libraries/python
-    newsapi = NewsApiClient(api_key='0fb13acc3bc8480eafedb87afa941f7e')
-
-
-    # /v2/everything
-    data = newsapi.get_everything(q=news_keyword)
-
-    jdict = data.get('articles')
 
     #Updating spreadsheet
 
@@ -317,33 +311,6 @@ def activate_all(text):
     plt.title('Most Frequent Words In Headlines')
     #https://www.kite.com/python/answers/how-save-a-matplotlib-plot-as-a-pdf-file-in-python
     plt.savefig("static/images/plot.png")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@app.route('/')
-
-
-
-
-def my_form():
-    return render_template('my-form.html')
-
-@app.route('/', methods=['POST'])
-def my_form_post():
-    text = request.form['text']
-
 
 
 
