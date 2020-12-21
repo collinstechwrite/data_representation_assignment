@@ -1,5 +1,13 @@
 from flask import Flask
 from flask_mysqldb import MySQL
+import webbrowser
+import os
+import json
+import requests
+from newsapi import NewsApiClient
+from openpyxl import Workbook, load_workbook
+import collections
+import matplotlib.pyplot as plt
 
 #Port number: 3306
 
@@ -15,14 +23,36 @@ mysql = MySQL(app)
 
 
 @app.route('/')
-
-
 def index():
-    headline_title = "banana"
-    url = "any_url"
-    cur = mysql.connection.cursor()
-    #cur.execute('''CREATE TABLE headlinetitles(ID int NOT NULL AUTO_INCREMENT, Title varchar(255), Url varchar(255),PRIMARY KEY (ID));''')
-    sqldata = ('''INSERT INTO headlinetitles (Title, Url) VALUES ('%s','%s');''',str(headline),str(url))
-    cur.execute(sqldata)
-    mysql.connection.commit()
+
+    #Setting up extractions from News API
+
+    news_keyword = 'COVID'
+
+    # https://newsapi.org/docs/client-libraries/python
+    newsapi = NewsApiClient(api_key='0fb13acc3bc8480eafedb87afa941f7e')
+
+
+    # /v2/everything
+    data = newsapi.get_everything(q=news_keyword)
+
+    jdict = data.get('articles')
+
+    #WORKING
+    for row in jdict:
+        cur = mysql.connection.cursor()
+        headline = row['title']
+        headline = headline.replace("'", "") #remove/replace inverted commas to avoid SQL errors when passing data to database
+        url = row['url']
+        SQL = ("INSERT INTO headlinetitles (Title, Url) values ('"+ headline +"','"+ url +"');")
+        cur.execute(SQL)
+        mysql.connection.commit()
     return 'done!'
+
+    #WORKING CODE
+    #cur = mysql.connection.cursor()
+    #cur.execute('''CREATE TABLE example (id INTEGER, name VARCHAR(20))''')
+    #cur.execute('''INSERT INTO example VALUES (1, 'Anthony')''')
+    #cur.execute('''INSERT INTO example VALUES (1, 'Anthony')''')
+    #mysql.connection.commit()
+    #return 'done!'

@@ -23,35 +23,7 @@ mysql = MySQL(app)
 
 
 
-def receive_text_from_form(text):
 
-    
-    #Setting up extractions from News API
-
-    news_keyword = text
-
-    # https://newsapi.org/docs/client-libraries/python
-    newsapi = NewsApiClient(api_key='0fb13acc3bc8480eafedb87afa941f7e')
-
-
-    # /v2/everything
-    data = newsapi.get_everything(q=news_keyword)
-
-    jdict = data.get('articles')
-    
-    my_list = []
-    cur = mysql.connection.cursor()
-    for row in jdict:
-        transfer = row['title'],row['url']
-        headline = row['title']
-        headline = headline.replace("'", "") #remove/replace inverted commas to avoid SQL errors when passing data to database
-        url = row['url']
-        my_list.append(transfer)
-        
-        sqldata = ("INSERT INTO headlinetitles (Title, Url) VALUES ('%s','%s');",str(headline),str(url))
-        cur.execute = (sqldata)
-    mysql.connection.commit()        
-    return my_list
 
 
 
@@ -61,7 +33,45 @@ def my_form():
 
 @app.route('/', methods=['POST'])
 def my_form_post():
+
+
+
+    def receive_text_from_form(text):
+
+        
+        #Setting up extractions from News API
+
+        news_keyword = text
+
+        # https://newsapi.org/docs/client-libraries/python
+        newsapi = NewsApiClient(api_key='0fb13acc3bc8480eafedb87afa941f7e')
+
+
+        # /v2/everything
+        data = newsapi.get_everything(q=news_keyword)
+
+        jdict = data.get('articles')
+        
+        my_list = []
+        
+        for row in jdict:
+            cur = mysql.connection.cursor()
+            transfer = row['title'],row['url']
+            headline = row['title']
+            headline = headline.replace("'", "") #remove/replace inverted commas to avoid SQL errors when passing data to database
+            url = row['url']
+            my_list.append(transfer)
+            SQL = ("INSERT INTO headlinetitles (Title, Url) values ('"+ headline +"','"+ url +"');")
+            cur.execute(SQL)
+            mysql.connection.commit()
+        return my_list
+
+
+    
     text = request.form['text']
+
+
+
 
 
 
@@ -72,6 +82,7 @@ def my_form_post():
     
     list = receive_text_from_form(text)
     filelocation = "Find yous files here", path, "/analysis.xlsx"
+    
     return render_template("my-form.html", list=list, filelocation=filelocation)
 
 
