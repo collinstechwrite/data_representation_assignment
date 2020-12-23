@@ -1,4 +1,3 @@
-
 import webbrowser
 import os
 import json
@@ -27,10 +26,6 @@ mysql = MySQL(app)
 @app.route('/StyleSheet.css')
 def my_style_sheet():
     return """
-
-
-
-
 input[type=text], select {
   width: 100%;
   padding: 12px 20px;
@@ -40,7 +35,6 @@ input[type=text], select {
   border-radius: 4px;
   box-sizing: border-box;
 }
-
 input[type=submit] {
   width: 100%;
   background-color: #4CAF50;
@@ -51,33 +45,25 @@ input[type=submit] {
   border-radius: 4px;
   cursor: pointer;
 }
-
 input[type=submit]:hover {
   background-color: #45a049;
 }
-
 div {
   border-radius: 5px;
   background-color: #f2f2f2;
   padding: 20px;
 }
-
-
 img {
    padding:1px;
    border:1px solid #021a40;
    background-color:#ff0;
 }
-
-
 body {
   font-family: Helvetica, sans-serif;
 }
-
 body {
   --stripe: #cfd8dc;
   --bg: #e1e1e1;
-
   background: linear-gradient(135deg, var(--bg) 25%, transparent 25%) -50px 0,
     linear-gradient(225deg, var(--bg) 25%, transparent 25%) -50px 0,
     linear-gradient(315deg, var(--bg) 25%, transparent 25%),
@@ -85,8 +71,6 @@ body {
   background-size: 100px 100px;
   background-color: var(--stripe);
 }
-
-
 .styled-table {
     border-collapse: collapse;
     margin: 25px 0;
@@ -95,48 +79,34 @@ body {
     min-width: 400px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
-
-
 .styled-table thead tr {
     background-color: #009879;
     color: #ffffff;
     text-align: left;
 }
-
-
 .styled-table th,
 .styled-table td {
     padding: 12px 15px;
 }
-
-
 .styled-table tbody tr {
     border-bottom: 1px solid #dddddd;
 }
-
 .styled-table tbody tr:nth-of-type(even) {
     background-color: #f3f3f3;
 }
-
 .styled-table tbody tr:last-of-type {
     border-bottom: 2px solid #009879;
 }
-
-
 .styled-table tbody tr.active-row {
     font-weight: bold;
     color: #009879;
 }
-
-
-
 /* Style the header with a grey background and some padding */
 .header {
   overflow: hidden;
   background-color: #f1f1f1;
   padding: 20px 10px;
 }
-
 /* Style the header links */
 .header a {
   float: left;
@@ -148,30 +118,25 @@ body {
   line-height: 25px;
   border-radius: 4px;
 }
-
 /* Style the logo link (notice that we set the same value of line-height and font-size to prevent the header to increase when the font gets bigger */
 .header a.logo {
   font-size: 25px;
   font-weight: bold;
 }
-
 /* Change the background color on mouse-over */
 .header a:hover {
   background-color: #ddd;
   color: black;
 }
-
 /* Style the active/current link*/
 .header a.active {
   background-color: dodgerblue;
   color: white;
 }
-
 /* Float the link section to the right */
 .header-right {
   float: right;
 }
-
 /* Add media queries for responsiveness - when the screen is 500px wide or less, stack the links on top of each other */
 @media screen and (max-width: 500px) {
   .header a {
@@ -183,7 +148,6 @@ body {
     float: none;
   }
 }
-
 """
 
 
@@ -202,10 +166,164 @@ def my_form():
 
 @app.route('/', methods=['POST'])
 def my_form_post():
+   
+    def generate_graph(jdict):
+        jdict = jdict
+        # this string will be used for doing word count analysis
+        my_string_for_word_count = ""
+        for row in jdict:
+
+            headline_title = row['title']
+            # remove/replace inverted commas to avoid SQL errors when passing data to database
+            headline_title = headline_title.replace("'", "")
+
+            url = row['url']
+
+            # adding one healine at a time to the string for word count analysis
+            my_string_for_word_count = my_string_for_word_count + headline_title
+
+
+        #this code below does a word count analysis
+        #https://www.w3resource.com/python-exercises/string/python-data-type-string-exercise-12.php
+        def word_count(str):
+            counts = {}
+            words = str.split()
+
+            for word in words:
+                if word in counts:
+                    counts[word] += 1
+                else:
+                    counts[word] = 1
+
+            return counts
+
+        counted_words =  word_count(my_string_for_word_count)
+
+
+        sorted_dict = collections.OrderedDict(counted_words)
 
 
 
+        x = sorted_dict
+
+        #https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
+        sorted_x = sorted(x.items(), key=lambda kv: kv[1])
+
+        #https://stackoverflow.com/questions/646644/how-to-get-last-items-of-a-list-in-python
+        my_graph_data = list(sorted_x)[-10:]
+        my_graph_data_dict = dict(my_graph_data)
+         
+        #https://thispointer.com/different-ways-to-remove-a-key-from-dictionary-in-python/
+        common_words = ['the','of','and','a','to','in','is','you','that','it','he','was',
+        'for','on',
+        'are',
+        'as',
+        'with',
+        'his',
+        'they',
+        'I',
+        'at',
+        'be',
+        'this',
+        'have',
+        'from',
+        'or',
+        'one',
+        'had',
+        'by',
+        'word',
+        'but',
+        'not',
+        'what',
+        'all',
+        'were',
+        'we',
+        'when',
+        'your',
+        'can',
+        'said',
+        'there',
+        'use',
+        'an',
+        'each',
+        'which',
+        'she',
+        'do',
+        'how',
+        'their',
+        'if',
+        'will',
+        'up',
+        'other',
+        'about',
+        'out',
+        'many',
+        'then',
+        'them',
+        'these',
+        'so',
+        'some',
+        'her',
+        'would',
+        'make',
+        'like',
+        'him',
+        'into',
+        'time',
+        'has',
+        'look',
+        'two',
+        'more',
+        'write',
+        'go',
+        'see',
+        'number',
+        'no',
+        'way',
+        'could',
+        'people',
+        'my',
+        'than',
+        'first',
+        'been',
+        'call',
+        'who',
+        'its',
+        'now',
+        'find',
+        'long',
+        'down',
+        'day',
+        'did',
+        'get',
+        'come',
+        'made',
+        'may',
+        'part',
+        ]
+
+        for word in common_words:
+            try:
+                my_graph_data_dict.pop(word)
+            except:
+                continue
+
+        #https://www.kite.com/python/answers/how-to-plot-a-bar-chart-using-a-dictionary-in-matplotlib-in-python
+        a_dictionary = x
+        keys = my_graph_data_dict.keys()
+        values = my_graph_data_dict.values()
+
+        #https://www.kite.com/python/answers/how-to-rotate-axis-labels-in-matplotlib-in-python
+        plt.xticks(rotation=45)
+        plt.yticks(rotation=90)
+        #https://showmecode.info/matplotlib/bar/change-bar-color/
+        plt.bar(keys, values,  color=['red', 'blue', 'purple', 'green', 'lavender'])
+        plt.ylabel('Occurences of word')
+        plt.title('Most Frequent Words In Headlines')
+        #https://www.kite.com/python/answers/how-save-a-matplotlib-plot-as-a-pdf-file-in-python
+        plt.savefig("static/images/plot.png")
     def receive_text_from_form(text):
+        
         # This is a very busy function, which handles extracting news from API, creating and saving to spreadsheet, saving records to MYSQL Server, doing word count analysis
         # creating and saving a matplotlib graph
 
@@ -222,7 +340,7 @@ def my_form_post():
         data = newsapi.get_everything(q=news_keyword)
 
         jdict = data.get('articles')
-
+        #generate_graph(jdict)
 
 
 
@@ -300,7 +418,6 @@ def delete_database():
     <table class="styled-table"><thead><tr><th><centre>Database Contents On MySQL Server</centre></th></tr></thead><tbody><tr class="active-row"><td>""" + results + """ </td></tr></tbody></tr></table>
     <img src="static/images/plot.png" alt="A Matplotlibplot">
     <button onclick="goBack()">Go Back</button>
-
 <script>
 function goBack() {
   window.history.back();
@@ -324,22 +441,17 @@ def database():
     return """ 
     <link href="StyleSheet.css" rel="stylesheet">
   
-
-
     <center>
     <table class="styled-table"><thead><tr><th><centre>Database Contents On MySQL Server</centre></th></tr></thead><tbody><tr class="active-row"><td>""" + results + """ </td></tr></tbody></tr></table>
     <img src="static/images/plot.png" alt="A Matplotlibplot">
     <a href="/delete_database">Click here to delete database content</a>
     <button onclick="goBack()">Go Back</button>
-
 <script>
 function goBack() {
   window.history.back();
 }
 </script>
 </center>
-
-
     """ 
 
 
