@@ -10,6 +10,12 @@ import matplotlib.pyplot as plt
 
 from flask import Flask, request, render_template
 from flask_mysqldb import MySQL
+import io
+import base64
+
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+
+import seaborn as sns
 
 
 app = Flask(__name__)
@@ -20,7 +26,30 @@ app.config['MYSQL_DB'] = 'sql2383132'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 mysql = MySQL(app)
 
+@app.route('/visualize')
+def visualize():
+    import matplotlib
+    import matplotlib.pyplot as plt
+    import numpy as np
 
+    # Data for plotting
+    t = np.arange(0.0, 2.0, 0.01)
+    s = 1 + np.sin(2 * np.pi * t)
+
+    fig, ax = plt.subplots()
+    ax.plot(t, s)
+
+    ax.set(xlabel='time (s)', ylabel='voltage (mV)',
+           title='About as simple as it gets, folks')
+    ax.grid()
+    canvas=FigureCanvasAgg(fig)
+    img=io.BytesIO()
+    fig.savefig(img)
+    img.seek(0)
+    return send_file(img,mimetype='img/png')
+
+
+    
 
 
 @app.route('/StyleSheet.css')
@@ -166,9 +195,11 @@ def my_form():
 
 @app.route('/', methods=['POST'])
 def my_form_post():
+
+    jdict = {}
    
-    def generate_graph(jdict):
-        jdict = jdict
+    def generate_graph():
+        global jdict
         # this string will be used for doing word count analysis
         my_string_for_word_count = ""
         for row in jdict:
@@ -201,17 +232,14 @@ def my_form_post():
 
 
         sorted_dict = collections.OrderedDict(counted_words)
-
-
-
         x = sorted_dict
 
         #https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
-        sorted_x = sorted(x.items(), key=lambda kv: kv[1])
+        #sorted_x = sorted(x.items(), key=lambda kv: kv[1])
 
         #https://stackoverflow.com/questions/646644/how-to-get-last-items-of-a-list-in-python
-        my_graph_data = list(sorted_x)[-10:]
-        my_graph_data_dict = dict(my_graph_data)
+        #my_graph_data = sorted_x[-10:]
+        #my_graph_data_dict = dict(my_graph_data)
          
         #https://thispointer.com/different-ways-to-remove-a-key-from-dictionary-in-python/
         common_words = ['the','of','and','a','to','in','is','you','that','it','he','was',
@@ -304,14 +332,19 @@ def my_form_post():
 
         for word in common_words:
             try:
-                my_graph_data_dict.pop(word)
+                #my_graph_data_dict.pop(word)
+                x.pop(word)
             except:
                 continue
 
         #https://www.kite.com/python/answers/how-to-plot-a-bar-chart-using-a-dictionary-in-matplotlib-in-python
-        a_dictionary = x
-        keys = my_graph_data_dict.keys()
-        values = my_graph_data_dict.values()
+        #a_dictionary = x
+        #keys = my_graph_data_dict.keys()
+        #values = my_graph_data_dict.values()
+
+        keys = x.keys()
+        values = x.values()
+
 
         #https://www.kite.com/python/answers/how-to-rotate-axis-labels-in-matplotlib-in-python
         plt.xticks(rotation=45)
@@ -321,8 +354,9 @@ def my_form_post():
         plt.ylabel('Occurences of word')
         plt.title('Most Frequent Words In Headlines')
         #https://www.kite.com/python/answers/how-save-a-matplotlib-plot-as-a-pdf-file-in-python
-        plt.savefig("static/images/plot.png")
+        plt.savefig("static/plot.png")
     def receive_text_from_form(text):
+        global jdict
         
         # This is a very busy function, which handles extracting news from API, creating and saving to spreadsheet, saving records to MYSQL Server, doing word count analysis
         # creating and saving a matplotlib graph
@@ -395,7 +429,9 @@ def my_form_post():
     path = os.getcwd()
 
     
-    list = receive_text_from_form(text)
+    list = receive_text_from_form(text) #this updates the global variable jdict with extracted newspaper headlines
+
+    generate_graph() #accesses the global variable jdict to produce a graph
     filelocation = "Find yous files here", path, "/analysis.xlsx"
     
     return render_template("my-form.html", list=list, filelocation=filelocation)
