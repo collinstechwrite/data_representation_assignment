@@ -3,10 +3,7 @@
 <!DOCTYPE html>
 <head>
 
-
-
-<link href="StyleSheet.css" rel="stylesheet">
-
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='StyleSheet.css') }}" />
 
 <title>Analyse The News</title>
 </head>
@@ -23,6 +20,7 @@
 
 
 <img src="https://www.irishtimes.com/polopoly_fs/1.3700610.1542410960!/image/image.jpg_gen/derivatives/box_620_330/image.jpg">
+<img src="static/images/plot.png" alt="A Matplotlibplot">
 
 <div>
 <form method="POST">
@@ -34,18 +32,6 @@
 
 </form>
 </div>
-
-
-
-How this works<br>
-
-1. We search a news api <a href="https://newsapi.org">https://newsapi.org</a><br>
-2. We save every article title to a remote MySQL database (hosted at <a href="https://www.freemysqlhosting.net">https://www.freemysqlhosting.net/</a>) and Spreadsheet  <p>{{filelocation}}</p> <br>
-3. We analyse the articles and count the words<br>
-4. We strip out the common words<br>
-5. We do a graph<br>
-
-
 
 <center>
 <table class="styled-table">
@@ -60,7 +46,15 @@ How this works<br>
 </table>
 </center>
 
-<img src="static/images/plot.png" alt="A Matplotlibplot">
+How this works<br>
+
+1. We search a news api <a href="https://newsapi.org">https://newsapi.org</a><br>
+2. We save every article title to a remote MySQL database (hosted at <a href="https://www.freemysqlhosting.net">https://www.freemysqlhosting.net/</a>) and Spreadsheet  <p>{{filelocation}}</p> <br>
+3. We analyse the articles and count the words<br>
+4. We strip out the common words<br>
+5. We do a graph<br>
+
+
 
 </body>
 
