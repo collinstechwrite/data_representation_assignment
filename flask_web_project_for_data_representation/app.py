@@ -5,7 +5,6 @@ import requests
 from newsapi import NewsApiClient
 from openpyxl import Workbook, load_workbook
 import collections
-import matplotlib.pyplot as plt
 
 
 import matplotlib
@@ -21,10 +20,9 @@ import base64
 from flask import Flask, request, render_template
 from flask_mysqldb import MySQL
 import io
-
-
 import seaborn as sns
 
+#HOW TO LINK AN ONLINE MYSQL DATBASE TO freemysqlhosting.net SEE https://youtu.be/51F_frStZCQ
 
 app = Flask(__name__)
 app.config['MYSQL_USER'] = 'sql2383132'
@@ -82,117 +80,36 @@ def plot():
     x = sorted_dict
 
     #https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
-    #sorted_x = sorted(x.items(), key=lambda kv: kv[1])
+    sorted_x = sorted(x.items(), key=lambda kv: kv[1])
 
     #https://stackoverflow.com/questions/646644/how-to-get-last-items-of-a-list-in-python
-    #my_graph_data = sorted_x[-10:]
-    #my_graph_data_dict = dict(my_graph_data)
+    my_graph_data = sorted_x[-10:]
+    my_graph_data_dict = dict(my_graph_data)
      
     #https://thispointer.com/different-ways-to-remove-a-key-from-dictionary-in-python/
     common_words = ['the','of','and','a','to','in','is','you','that','it','he','was',
-    'for','on',
-    'are',
-    'as',
-    'with',
-    'his',
-    'they',
-    'I',
-    'at',
-    'be',
-    'this',
-    'have',
-    'from',
-    'or',
-    'one',
-    'had',
-    'by',
-    'word',
-    'but',
-    'not',
-    'what',
-    'all',
-    'were',
-    'we',
-    'when',
-    'your',
-    'can',
-    'said',
-    'there',
-    'use',
-    'an',
-    'each',
-    'which',
-    'she',
-    'do',
-    'how',
-    'their',
-    'if',
-    'will',
-    'up',
-    'other',
-    'about',
-    'out',
-    'many',
-    'then',
-    'them',
-    'these',
-    'so',
-    'some',
-    'her',
-    'would',
-    'make',
-    'like',
-    'him',
-    'into',
-    'time',
-    'has',
-    'look',
-    'two',
-    'more',
-    'write',
-    'go',
-    'see',
-    'number',
-    'no',
-    'way',
-    'could',
-    'people',
-    'my',
-    'than',
-    'first',
-    'been',
-    'call',
-    'who',
-    'its',
-    'now',
-    'find',
-    'long',
-    'down',
-    'day',
-    'did',
-    'get',
-    'come',
-    'made',
-    'may',
-    'part',
-    ]
+    'for','on','are','as','with','his','they','I','at','be','this','have','from',
+    'or','one','had','by','word','but','not','what','all','were','we','when',
+    'your','can','said','there','use','an','each','which','she','do','how',
+    'their','if','will','up','other','about','out','many','then','them','these',
+    'so','some','her','would','make','like','him','into','time','has','look',
+    'two','more','write','go','see','number','no','way','could','people',
+    'my','than','first','been','call','who','its','now','find','long','down',
+    'day','did','get','come','made','may','part','-']
 
     for word in common_words:
         try:
-            #my_graph_data_dict.pop(word)
-            x.pop(word)
+            my_graph_data_dict.pop(word)
         except:
             continue
 
     #https://www.kite.com/python/answers/how-to-plot-a-bar-chart-using-a-dictionary-in-matplotlib-in-python
-    #a_dictionary = x
-    #keys = my_graph_data_dict.keys()
-    #values = my_graph_data_dict.values()
+    #SENDING MATPLOTLIB TO FLASK
+    #https://stackoverflow.com/questions/65419083/simple-matplotlib-as-embedded-image-in-web-page-generated-by-flask/
+    my_graph_data_dict_copy = my_graph_data_dict.copy()
+    keys = my_graph_data_dict_copy.keys()
+    values = my_graph_data_dict_copy.values()
 
-    keys = x.keys()
-    values = x.values()
-
- 
     #https://www.kite.com/python/answers/how-to-rotate-axis-labels-in-matplotlib-in-python
     plt.xticks(rotation=45)
     plt.yticks(rotation=90)
@@ -207,7 +124,7 @@ def plot():
     img.seek(0)
     plot_url = base64.b64encode(img.getvalue()).decode('utf8')
 
-    return render_template('plot.html', plot_url=plot_url)
+    return render_template('plot.html', plot_url=plot_url,my_graph_data_dict=my_graph_data_dict_copy,keys=keys,values=values)
 
 
 @app.route('/StyleSheet.css')
@@ -340,13 +257,6 @@ body {
 
 
 
-
-
-
-
-
-
-
 @app.route('/')
 def my_form():
     return render_template('my-form.html')
@@ -355,163 +265,7 @@ def my_form():
 def my_form_post():
 
    
-    def generate_graph():
-        global jdict
-        # this string will be used for doing word count analysis
-        my_string_for_word_count = ""
-        for row in jdict:
 
-            headline_title = row['title']
-            # remove/replace inverted commas to avoid SQL errors when passing data to database
-            headline_title = headline_title.replace("'", "")
-
-            url = row['url']
-
-            # adding one healine at a time to the string for word count analysis
-            my_string_for_word_count = my_string_for_word_count + headline_title
-
-
-        #this code below does a word count analysis
-        #https://www.w3resource.com/python-exercises/string/python-data-type-string-exercise-12.php
-        def word_count(str):
-            counts = {}
-            words = str.split()
-
-            for word in words:
-                if word in counts:
-                    counts[word] += 1
-                else:
-                    counts[word] = 1
-
-            return counts
-
-        counted_words =  word_count(my_string_for_word_count)
-
-
-        sorted_dict = collections.OrderedDict(counted_words)
-        x = sorted_dict
-
-        #https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
-        #sorted_x = sorted(x.items(), key=lambda kv: kv[1])
-
-        #https://stackoverflow.com/questions/646644/how-to-get-last-items-of-a-list-in-python
-        #my_graph_data = sorted_x[-10:]
-        #my_graph_data_dict = dict(my_graph_data)
-         
-        #https://thispointer.com/different-ways-to-remove-a-key-from-dictionary-in-python/
-        common_words = ['the','of','and','a','to','in','is','you','that','it','he','was',
-        'for','on',
-        'are',
-        'as',
-        'with',
-        'his',
-        'they',
-        'I',
-        'at',
-        'be',
-        'this',
-        'have',
-        'from',
-        'or',
-        'one',
-        'had',
-        'by',
-        'word',
-        'but',
-        'not',
-        'what',
-        'all',
-        'were',
-        'we',
-        'when',
-        'your',
-        'can',
-        'said',
-        'there',
-        'use',
-        'an',
-        'each',
-        'which',
-        'she',
-        'do',
-        'how',
-        'their',
-        'if',
-        'will',
-        'up',
-        'other',
-        'about',
-        'out',
-        'many',
-        'then',
-        'them',
-        'these',
-        'so',
-        'some',
-        'her',
-        'would',
-        'make',
-        'like',
-        'him',
-        'into',
-        'time',
-        'has',
-        'look',
-        'two',
-        'more',
-        'write',
-        'go',
-        'see',
-        'number',
-        'no',
-        'way',
-        'could',
-        'people',
-        'my',
-        'than',
-        'first',
-        'been',
-        'call',
-        'who',
-        'its',
-        'now',
-        'find',
-        'long',
-        'down',
-        'day',
-        'did',
-        'get',
-        'come',
-        'made',
-        'may',
-        'part',
-        ]
-
-        for word in common_words:
-            try:
-                #my_graph_data_dict.pop(word)
-                x.pop(word)
-            except:
-                continue
-
-        #https://www.kite.com/python/answers/how-to-plot-a-bar-chart-using-a-dictionary-in-matplotlib-in-python
-        #a_dictionary = x
-        #keys = my_graph_data_dict.keys()
-        #values = my_graph_data_dict.values()
-
-        keys = x.keys()
-        values = x.values()
-
-
-        #https://www.kite.com/python/answers/how-to-rotate-axis-labels-in-matplotlib-in-python
-        plt.xticks(rotation=45)
-        plt.yticks(rotation=90)
-        #https://showmecode.info/matplotlib/bar/change-bar-color/
-        plt.bar(keys, values,  color=['red', 'blue', 'purple', 'green', 'lavender'])
-        plt.ylabel('Occurences of word')
-        plt.title('Most Frequent Words In Headlines')
-        #https://www.kite.com/python/answers/how-save-a-matplotlib-plot-as-a-pdf-file-in-python
-        plt.savefig("static/plot.png")
     def receive_text_from_form(text):
         global jdict
         
@@ -588,7 +342,7 @@ def my_form_post():
     
     list = receive_text_from_form(text) #this updates the global variable jdict with extracted newspaper headlines
 
-    generate_graph() #accesses the global variable jdict to produce a graph
+
     filelocation = "Find yous files here", path, "/analysis.xlsx"
     
     return render_template("my-form.html", list=list, filelocation=filelocation)
@@ -609,13 +363,18 @@ def delete_database():
     return """
     <link href="StyleSheet.css" rel="stylesheet">
     <table class="styled-table"><thead><tr><th><centre>Database Contents On MySQL Server</centre></th></tr></thead><tbody><tr class="active-row"><td>""" + results + """ </td></tr></tbody></tr></table>
-    <img src="static/images/plot.png" alt="A Matplotlibplot">
-    <button onclick="goBack()">Go Back</button>
-<script>
-function goBack() {
-  window.history.back();
-}
-</script>
+
+
+    <button class="button" onclick="window.location.href='/database';">
+      view database content
+    </button>
+
+    <button class="button" onclick="window.location.href='/';">
+      Home
+    </button>
+
+
+
     """ 
 
 @app.route('/database')
@@ -636,15 +395,18 @@ def database():
   
     <center>
     <table class="styled-table"><thead><tr><th><centre>Database Contents On MySQL Server</centre></th></tr></thead><tbody><tr class="active-row"><td>""" + results + """ </td></tr></tbody></tr></table>
-    <img src="static/images/plot.png" alt="A Matplotlibplot">
-    <a href="/delete_database">Click here to delete database content</a>
-    <button onclick="goBack()">Go Back</button>
-<script>
-function goBack() {
-  window.history.back();
-}
-</script>
-</center>
+
+
+    <button class="button" onclick="window.location.href='/delete_database';">
+      Click here to delete database content
+    </button>
+
+    <button class="button" onclick="window.location.href='/';">
+      Home
+    </button>
+
+
+    </center>
     """ 
 
 
