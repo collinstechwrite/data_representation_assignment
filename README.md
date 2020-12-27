@@ -24,3 +24,17 @@ You will be able to
 3. The program will update a table stored at a remote MySql database
 4. You will be able to view and delete all the rows at the remote MySql database
 
+
+
+
+Original Mockup Idea Can be found in the Jupyter Notebook and within py files in the folder called draft_files
+https://github.com/g00387822/data_representation_assignment/blob/main/Data_Representation_Assignment_Notebook.ipynb
+
+This programs extract brand names that sell food from the openfoodfacts api<br>
+This program then searches newsapi for newspaper headlines using a brand name chosen by the user<br>
+This program then translates the newspaper headlines into a language chosen by the user - API key was required<br>
+This program then saves the translated results to a spreadsheet called analysis.xlsx<br>
+This program then saves the translated results to a MySQL database called news - It is requirement that user has database news setup on their local host and same passwords as within code.<br>
+This program will then attempt to convert the spreadsheet results into a webpage called Output.html and load the webbrowser<br>
+
+I ran into some issues and ran out of time trying to move all the moving parts over to FLASK. Instability in one api could have a knock on affect on functionality across other api calls.
