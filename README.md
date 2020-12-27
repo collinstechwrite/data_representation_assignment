@@ -1,6 +1,6 @@
 Use your command prompt to go to a directory that you want to save the github project
 
-At the command prompt type git clone and copy paste the github url of the project
+At the command prompt type git clone and copy paste the github url of the project<br>
 git clone https://github.com/g00387822/data_representation_assignment
 
 Open a new command prompt
@@ -8,13 +8,13 @@ Navigate to the folder called 'flask_web_project_for_data_representation'
 
 and run the following commands
 
-python -m venv venv
-.\venv\scripts\activate.bat
-pip install -r requirements.txt
-set FLASK_APP=app.py
-flask run
+python -m venv venv<br>
+.\venv\scripts\activate.bat<br>
+pip install -r requirements.txt<br>
+set FLASK_APP=app.py<br>
+flask run<br>
 
-Open your browser and go to your browser to load this url
+Open your browser and go to your browser to load this url<br>
 http://127.0.0.1:5000
 
 You will be able to 
