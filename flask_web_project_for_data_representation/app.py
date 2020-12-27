@@ -343,7 +343,12 @@ def my_form_post():
     list = receive_text_from_form(text) #this updates the global variable jdict with extracted newspaper headlines
 
 
-    filelocation = "Find yous files here", path, "/analysis.xlsx"
+    filelocation = path + "/analysis.xlsx"
+    #'C:\\Users\\Owner\\Desktop\\data_representation_assignment\\flask_web_project_for_data_representation', '/analysis.xlsx'
+    #https://stackoverflow.com/questions/5186839/python-replace-with
+    filelocation  = filelocation.replace("\\\\", "\\")
+    filelocation  = filelocation.replace("/", "\\")
+                                         
     
     return render_template("my-form.html", list=list, filelocation=filelocation)
 
