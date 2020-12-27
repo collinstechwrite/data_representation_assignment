@@ -8,16 +8,19 @@ import collections
 import matplotlib.pyplot as plt
 
 
-from flask import Flask, request, render_template
-from flask_mysqldb import MySQL
-import io
-import base64
-
-from matplotlib.backends.backend_agg import FigureCanvasAgg
-
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from flask import Flask, render_template
+from io import BytesIO
+import base64
+
+
+
+
+from flask import Flask, request, render_template
+from flask_mysqldb import MySQL
+import io
 
 
 import seaborn as sns
@@ -35,15 +38,15 @@ mysql = MySQL(app)
 jdict = {}
 
 
-@app.route('/visualize')
-def visualize():
-    import matplotlib
-    import matplotlib.pyplot as plt
-    import numpy as np
+@app.route('/plot')
+def plot():
+
+
 
 
 
     global jdict
+    img = BytesIO()
     # this string will be used for doing word count analysis
     my_string_for_word_count = ""
     for row in jdict:
@@ -199,15 +202,12 @@ def visualize():
     plt.title('Most Frequent Words In Headlines')
     #https://www.kite.com/python/answers/how-save-a-matplotlib-plot-as-a-pdf-file-in-python
 
+    plt.savefig(img, format='png')
+    plt.close()
+    img.seek(0)
+    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
 
-    #here is the trick save your figure into a bytes object and you can afterwards expose it via flas
-    bytes_image = io.BytesIO()
-    plt.savefig('img')
-    
-    return send_file(img,mimetype='img')
-
-
-    
+    return render_template('plot.html', plot_url=plot_url)
 
 
 @app.route('/StyleSheet.css')
